@@ -13,7 +13,31 @@ def pegar_cotacao():
     """A dummy docstring."""
 
 
+def selecionar_arquivo():
+    """A dummy docstring."""
+
+
+def atualizar_cotacoes():
+    """A dummy docstring."""
+
+
 root = tk.Tk()
+# =============== centralizando root ======================
+# dimensão da root
+largura = 565
+altura = 490
+
+# achar dimensão da nossa tela
+largura_screen = root.winfo_screenwidth()
+altura_screen = root.winfo_screenheight()
+print(largura_screen, altura_screen)
+
+# posicao root
+posx = largura_screen/2 - largura/2
+posy = altura_screen/2 - altura/2
+
+# definir geometria
+root.geometry('%dx%d+%d+%d' % (largura, altura, posx, posy))
 
 # =============== LAYOUT =============================================
 # =============== selecionar 1 moeda ==================================
@@ -27,7 +51,7 @@ label_cotacaomoedas.grid(row=0, column=0, padx=10,
                          pady=10, sticky='nswe', columnspan=3)
 
 label_selecionarmoeda = tk.Label(
-    text='Selecionar moeda que deseja consultar')
+    text='Selecionar moeda que deseja consultar', anchor='e')
 label_selecionarmoeda.grid(row=1, column=0, padx=10,
                            pady=10, sticky='nswe', columnspan=2)
 
@@ -35,10 +59,10 @@ combobox_selecionarmoeda = ttk.Combobox(values=lista_moedas)
 combobox_selecionarmoeda.grid(row=1, column=2, padx=10,
                               pady=10, sticky='nswe')
 
-label_selecionarmoeda = tk.Label(
-    text='Selecione o dia que deseja pegar a cotação')
-label_selecionarmoeda.grid(row=2, column=0, padx=10,
-                           pady=10, sticky='nswe', columnspan=2)
+label_selecionardia = tk.Label(
+    text='Selecione o dia que deseja pegar a cotação', anchor='e')
+label_selecionardia.grid(row=2, column=0, padx=10,
+                         pady=10, sticky='nswe', columnspan=2)
 
 calendario_moeda = DateEntry(year=2022, locale='pt_br')
 calendario_moeda.grid(row=2, column=2, padx=10,
@@ -65,5 +89,60 @@ label_variasmoedas = tk.Label(
     text='Cotação de multiplas moedas', borderwidth=2, relief='solid')
 label_variasmoedas.grid(row=4, column=0, padx=10,
                         pady=10, sticky='nswe', columnspan=3)
+
+label_selecionararquivo = tk.Label(
+    text='Selecione um arquivo em Excel com as moedas na colana A')
+label_selecionararquivo.grid(row=5, column=0, padx=10,
+                             pady=10, sticky='nswe', columnspan=2)
+
+btn_selecionararquivo = tk.Button(text='Clique para selecionar', command=selecionar_arquivo,
+                                  bg='#5F6062',
+                                  fg='#fff',
+                                  font='Roboto 10 bold')
+btn_selecionararquivo .grid(row=5, column=2, padx=10,
+                            pady=10, sticky='nswe')
+
+label_arquivoselecionado = tk.Label(
+    text='Nenhum arquivo selecionado', anchor='e')
+label_arquivoselecionado.grid(row=6, column=0, padx=10,
+                              pady=10, sticky='nswe', columnspan=3)
+
+label_datainicial = tk.Label(text='Data Inicial', anchor='e')
+label_datainicial.grid(row=7, column=0, padx=10,
+                       pady=10, sticky='nswe')
+
+label_datafinal = tk.Label(text='Data Final', anchor='e')
+label_datafinal.grid(row=8, column=0, padx=10,
+                     pady=10, sticky='nswe')
+
+calendario_datainicial = DateEntry(year=2022, locale='pt_br')
+calendario_datainicial.grid(row=7, column=1, padx=10,
+                            pady=10, sticky='nswe')
+
+calendario_datafinal = DateEntry(year=2022, locale='pt_br')
+calendario_datafinal.grid(row=8, column=1, padx=10,
+                          pady=10, sticky='nswe')
+
+btn_atualizarcotacoes = tk.Button(text='Atualizar cotações', command=atualizar_cotacoes,
+                                  bg='#5F6062',
+                                  fg='#fff',
+                                  font='Roboto 10 bold')
+btn_atualizarcotacoes.grid(row=9, column=0, padx=10,
+                           pady=10, sticky='nswe')
+
+label_textocotacao = tk.Label(text='',
+                              bg='#5F6062',
+                              fg='#C9DCB3',
+                              font='Roboto 15 bold',
+                              width=30)
+label_textocotacao.grid(row=9, column=1, padx=10,
+                        pady=10, sticky='nswe', columnspan=2)
+
+btn_fechar = tk.Button(text='Fechar', command=root.quit,
+                       bg='#5F6062',
+                       fg='#fff',
+                       font='Roboto 10 bold')
+btn_fechar.grid(row=10, column=2, padx=10,
+                pady=10, sticky='nswe')
 
 root.mainloop()
