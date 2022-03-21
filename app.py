@@ -2,15 +2,31 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
+import requests
 
 # ================ Variaveis ===============================
-lista_moedas = ['USD', 'EUR']
+LINK_1 = 'https://economia.awesomeapi.com.br/json/all'
+requisicao = requests.get(LINK_1)
+dicionario_moedas = requisicao.json()
+lista_moedas = list(dicionario_moedas.keys())
+
 
 # ================ Funcões ===============================
 
 
 def pegar_cotacao():
     """A dummy docstring."""
+    moeda = combobox_selecionarmoeda.get()
+    data_cotacao = calendario_moeda.get()
+    ano = data_cotacao[-4:]
+    mes = data_cotacao[3:5]
+    dia = data_cotacao[:2]
+    link_2 = f'https://economia.awesomeapi.com.br/{moeda}-BRL/10?'\
+             f'start_date={ano}{mes}{dia}&end_date={ano}{mes}{dia}'
+    requisicao_moeda = requests.get(link_2)
+    cotacao = requisicao_moeda.json()
+    valor_moeda = cotacao[0]['bid']
+    label_textocotacao['text'] = f'A cotação da {moeda} no dia {data_cotacao} foi de: R${valor_moeda}'
 
 
 def selecionar_arquivo():
@@ -24,20 +40,20 @@ def atualizar_cotacoes():
 root = tk.Tk()
 # =============== centralizando root ======================
 # dimensão da root
-largura = 565
-altura = 490
+LARGURA = 565
+ALTURA = 490
 
 # achar dimensão da nossa tela
-largura_screen = root.winfo_screenwidth()
-altura_screen = root.winfo_screenheight()
-print(largura_screen, altura_screen)
+LARGURA_SCREEN = root.winfo_screenwidth()
+ALTURA_SCREEN = root.winfo_screenheight()
+print(LARGURA_SCREEN, ALTURA_SCREEN)
 
 # posicao root
-posx = largura_screen/2 - largura/2
-posy = altura_screen/2 - altura/2
+POSX = LARGURA_SCREEN/2 - LARGURA/2
+POSY = ALTURA_SCREEN/2 - ALTURA/2
 
 # definir geometria
-root.geometry('%dx%d+%d+%d' % (largura, altura, posx, posy))
+root.geometry('%dx%d+%d+%d' % (LARGURA, ALTURA, POSX, POSY))
 
 # =============== LAYOUT =============================================
 # =============== selecionar 1 moeda ==================================
@@ -71,7 +87,7 @@ calendario_moeda.grid(row=2, column=2, padx=10,
 label_textocotacao = tk.Label(text='',
                               bg='#5F6062',
                               fg='#C9DCB3',
-                              font='Roboto 15 bold',
+                              font='Roboto 9 bold',
                               width=30)
 label_textocotacao.grid(row=3, column=0, padx=10,
                         pady=10, sticky='nswe', columnspan=2)
@@ -123,6 +139,7 @@ calendario_datafinal = DateEntry(year=2022, locale='pt_br')
 calendario_datafinal.grid(row=8, column=1, padx=10,
                           pady=10, sticky='nswe')
 
+
 btn_atualizarcotacoes = tk.Button(text='Atualizar cotações', command=atualizar_cotacoes,
                                   bg='#5F6062',
                                   fg='#fff',
@@ -130,13 +147,13 @@ btn_atualizarcotacoes = tk.Button(text='Atualizar cotações', command=atualizar
 btn_atualizarcotacoes.grid(row=9, column=0, padx=10,
                            pady=10, sticky='nswe')
 
-label_textocotacao = tk.Label(text='',
-                              bg='#5F6062',
-                              fg='#C9DCB3',
-                              font='Roboto 15 bold',
-                              width=30)
-label_textocotacao.grid(row=9, column=1, padx=10,
-                        pady=10, sticky='nswe', columnspan=2)
+label_textocotacoes = tk.Label(text='',
+                               bg='#5F6062',
+                               fg='#C9DCB3',
+                               font='Roboto 15 bold',
+                               width=30)
+label_textocotacoes.grid(row=9, column=1, padx=10,
+                         pady=10, sticky='nswe', columnspan=2)
 
 btn_fechar = tk.Button(text='Fechar', command=root.quit,
                        bg='#5F6062',
