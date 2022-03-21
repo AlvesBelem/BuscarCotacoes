@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
+from tkinter.filedialog import askopenfilename
 import requests
 
 # ================ Variaveis ===============================
@@ -26,11 +27,16 @@ def pegar_cotacao():
     requisicao_moeda = requests.get(link_2)
     cotacao = requisicao_moeda.json()
     valor_moeda = cotacao[0]['bid']
-    label_textocotacao['text'] = f'A cotação da {moeda} no dia {data_cotacao} foi de: R${valor_moeda}'
+    label_textocotacao['text'] = f'A cotação da {moeda}' \
+                                 f' no dia {data_cotacao} foi de: R$ {valor_moeda}'
 
 
 def selecionar_arquivo():
     """A dummy docstring."""
+    caminho_arquivo = askopenfilename(title='Seleione o arquivo de moeda')
+    var_caminhoarquivo.set(caminho_arquivo)
+    if caminho_arquivo:
+        label_arquivoselecionado['text'] = f'Arquivo Selecionado: {caminho_arquivo}'
 
 
 def atualizar_cotacoes():
@@ -110,6 +116,8 @@ label_selecionararquivo = tk.Label(
     text='Selecione um arquivo em Excel com as moedas na colana A')
 label_selecionararquivo.grid(row=5, column=0, padx=10,
                              pady=10, sticky='nswe', columnspan=2)
+
+var_caminhoarquivo = tk.StringVar()
 
 btn_selecionararquivo = tk.Button(text='Clique para selecionar', command=selecionar_arquivo,
                                   bg='#5F6062',
