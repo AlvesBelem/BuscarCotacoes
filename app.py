@@ -4,6 +4,9 @@ from tkinter import ttk
 from tkcalendar import DateEntry
 from tkinter.filedialog import askopenfilename
 import requests
+import pandas as pd
+from datetime import datetime
+import numpy as np
 
 # ================ Variaveis ===============================
 LINK_1 = 'https://economia.awesomeapi.com.br/json/all'
@@ -41,12 +44,45 @@ def selecionar_arquivo():
 
 def atualizar_cotacoes():
     """A dummy docstring."""
+    try:
+        df = pd.read_excel(var_caminhoarquivo.get())
+        moedas = df.iloc[:, 0]
+        data_inicial = calendario_datainicial.get()
+        data_final = calendario_datafinal.get()
+
+        ano_inicial = data_inicial[-4:]
+        mes_inicial = data_inicial[3:5]
+        dia_inicial = data_inicial[:2]
+
+        ano_final = data_final[-4:]
+        mes_final = data_final[3:5]
+        dia_final = data_final[:2]
+
+        for moeda in moedas:
+            link_3 = f'https://economia.awesomeapi.com.br/{moeda}-BRL/10?'\
+                f'start_date={ano_inicial}{mes_inicial}{dia_inicial}'\
+                f'&end_date={ano_final}{mes_final}{dia_final}'
+            requisicao_moeda = requests.get(link_3)
+            cotacoes = requisicao_moeda.json()
+            for cotacao in cotacoes:
+                bid = float(cotacao['bid'])
+                timestamp = int(cotacao['timestamp'])
+                data = datetime.fromtimestamp(timestamp)
+                data = data.strftime('%d/%m/%Y')
+                if data not in df:
+                    df[data] = np.nan
+
+                df.loc[df.iloc[:, 0] == moeda, data] = bid
+        df.to_excel('moedas.xlsx')
+        label_atualizarcotacoes['text'] = 'Arquivo Atualizado com Sucesso'
+    except:
+        label_atualizarcotacoes['text'] = 'Selecione um Arquivo Excel em um formato correto'
 
 
 root = tk.Tk()
 # =============== centralizando root ======================
 # dimensão da root
-LARGURA = 565
+LARGURA = 530
 ALTURA = 490
 
 # achar dimensão da nossa tela
@@ -155,13 +191,13 @@ btn_atualizarcotacoes = tk.Button(text='Atualizar cotações', command=atualizar
 btn_atualizarcotacoes.grid(row=9, column=0, padx=10,
                            pady=10, sticky='nswe')
 
-label_textocotacoes = tk.Label(text='',
-                               bg='#5F6062',
-                               fg='#C9DCB3',
-                               font='Roboto 15 bold',
-                               width=30)
-label_textocotacoes.grid(row=9, column=1, padx=10,
-                         pady=10, sticky='nswe', columnspan=2)
+label_atualizarcotacoes = tk.Label(text='',
+                                   bg='#5F6062',
+                                   fg='#C9DCB3',
+                                   font='Roboto 9 bold',
+                                   width=30)
+label_atualizarcotacoes.grid(row=9, column=1, padx=10,
+                             pady=10, sticky='nswe', columnspan=2)
 
 btn_fechar = tk.Button(text='Fechar', command=root.quit,
                        bg='#5F6062',
